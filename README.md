@@ -90,6 +90,7 @@ Or just visit the **[Live Demo](https://saurabh12150jhaa.github.io/smc-visual-pl
 |---------|-------------|------|
 | **SMC Trading Strategies** | 10-strategy dashboard with learning progress | [Live](https://saurabh12150jhaa.github.io/smc-trading-strategies/) · [Repo](https://github.com/Saurabh12150Jhaa/smc-trading-strategies) |
 | **SMC Trading Terminal** | Terminal-style rulebook with collapsible sections | [Live](https://saurabh12150jhaa.github.io/smc-trading-terminal/) · [Repo](https://github.com/Saurabh12150Jhaa/smc-trading-terminal) |
+| **SMC Trading Windows** | Visual killzone patterns with SVG diagrams & live timeline | [Live](https://saurabh12150jhaa.github.io/smc-trading-windows/) · [Repo](https://github.com/Saurabh12150Jhaa/smc-trading-windows) |
 
 ---
 
