@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NIFTY EDGE v4.0 — Visual Playbook</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0b0f19;--card:#111827;--card2:#1a2235;--border:#1f2937;--green:#10b981;--red:#ef4444;--amber:#f59e0b;--blue:#3b82f6;--purple:#8b5cf6;--cyan:#06b6d4;--text:#f1f5f9;--dim:#94a3b8;--dimmer:#475569}
+body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+.mono{font-family:'SF Mono','Fira Code',Consolas,monospace}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+
+/* Top Nav */
+.topnav{position:sticky;top:0;z-index:100;background:rgba(11,15,25,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0 24px}
+.topnav-inner{max-width:1140px;margin:0 auto;display:flex;align-items:center;gap:24px;height:54px;overflow-x:auto}
+.topnav .brand{font-weight:800;font-size:14px;color:var(--green);white-space:nowrap;letter-spacing:-.5px;flex-shrink:0}
+.topnav a{color:var(--dimmer);font-size:12px;text-decoration:none;white-space:nowrap;padding:16px 0;border-bottom:2px solid transparent;transition:all .2s;font-weight:500}
+.topnav a:hover,.topnav a.active{color:var(--text);border-bottom-color:var(--blue)}
+.topnav .clock{margin-left:auto;font-size:11px;color:var(--dimmer);font-family:'SF Mono',Consolas,monospace;flex-shrink:0}
+
+/* Layout */
+.wrap{max-width:1040px;margin:0 auto;padding:32px 24px 60px}
+section{margin-bottom:48px}
+section>h2{font-size:22px;font-weight:800;margin-bottom:6px;letter-spacing:-.5px}
+section>.subtitle{font-size:13px;color:var(--dim);margin-bottom:24px}
+h3{font-size:15px;font-weight:700;margin:20px 0 10px}
+h4{font-size:13px;font-weight:700;color:var(--dim);text-transform:uppercase;letter-spacing:.8px;margin:16px 0 8px}
+
+/* Cards */
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:14px}
+.card-flush{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:14px}
+
+/* Grids */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+.g4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:12px}
+@media(max-width:768px){.g2,.g3,.g4{grid-template-columns:1fr}}
+
+/* SVG diagrams */
+.diagram{background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:16px;margin:12px 0}
+.diagram svg{width:100%;display:block}
+.diagram-label{font-size:10px;color:var(--dimmer);text-align:center;margin-top:6px}
+
+/* Stat pill */
+.pill{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:20px;font-size:11px;font-weight:700;font-family:'SF Mono',Consolas,monospace}
+.pill-green{background:rgba(16,185,129,.12);color:var(--green)}
+.pill-red{background:rgba(239,68,68,.12);color:var(--red)}
+.pill-amber{background:rgba(245,158,11,.12);color:var(--amber)}
+.pill-blue{background:rgba(59,130,246,.12);color:var(--blue)}
+.pill-purple{background:rgba(139,92,246,.12);color:var(--purple)}
+
+/* Rule strips */
+.rule-strip{display:flex;align-items:flex-start;gap:12px;padding:14px 16px;background:var(--card2);border-radius:8px;margin-bottom:8px;border-left:3px solid var(--red)}
+.rule-strip.ok{border-left-color:var(--green)}
+.rule-strip .rnum{font-size:18px;font-weight:800;color:var(--dimmer);min-width:28px;font-family:'SF Mono',Consolas,monospace}
+.rule-strip .rtxt{font-size:13px;font-weight:600}
+.rule-strip .rdesc{font-size:11px;color:var(--dim);margin-top:2px}
+
+/* Tables */
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{text-align:left;padding:8px 12px;font-size:10px;text-transform:uppercase;letter-spacing:.6px;color:var(--dimmer);border-bottom:1px solid var(--border);font-weight:600}
+td{padding:8px 12px;border-bottom:1px solid rgba(31,41,55,.5)}
+tr:hover td{background:rgba(255,255,255,.02)}
+
+/* Strategy cards */
+.strat{position:relative;overflow:hidden;border-top:3px solid}
+.strat .strat-head{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;flex-wrap:wrap;gap:8px}
+.strat .strat-head h3{margin:0;font-size:15px}
+.strat .strat-stats{display:flex;gap:8px;flex-wrap:wrap}
+.strat .strat-body{padding:0 20px 16px}
+.strat .flow-row{display:flex;gap:6px;align-items:stretch;flex-wrap:wrap;margin:8px 0}
+.flow-box{background:var(--card2);border:1px solid var(--border);border-radius:6px;padding:8px 12px;font-size:11px;flex:1;min-width:100px;position:relative}
+.flow-box::after{content:'>';position:absolute;right:-10px;top:50%;transform:translateY(-50%);color:var(--dimmer);font-size:14px;font-weight:700}
+.flow-box:last-child::after{content:''}
+.flow-box strong{display:block;font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:var(--dimmer);margin-bottom:2px}
+
+/* Killzone bar */
+.kz-visual{display:flex;height:48px;border-radius:8px;overflow:hidden;margin:12px 0}
+.kz-seg{display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:9px;font-weight:700;letter-spacing:.3px;transition:all .2s}
+.kz-seg:hover{filter:brightness(1.15)}
+
+/* Checklist */
+.cl-item{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--card2);border-radius:6px;margin-bottom:6px;cursor:pointer;border:1px solid transparent;transition:all .15s;font-size:12px}
+.cl-item:hover{border-color:var(--blue)}
+.cl-item.done{border-color:var(--green);background:rgba(16,185,129,.05)}
+.cl-item input{accent-color:var(--green);width:16px;height:16px;cursor:pointer}
+.go-box{text-align:center;padding:20px;border-radius:10px;font-size:20px;font-weight:800;letter-spacing:.5px;margin:14px 0;transition:all .3s}
+
+/* Score calc */
+.sc-row{display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--card2);border-radius:6px;margin-bottom:6px;font-size:12px}
+.sc-row label{flex:1}
+.sc-row select{background:var(--card);border:1px solid var(--border);color:var(--text);padding:4px 8px;border-radius:4px;font-size:11px}
+.sc-result{text-align:center;padding:20px;border-radius:10px;margin:14px 0;font-weight:800}
+.sc-result .big{font-size:44px;font-family:'SF Mono',Consolas,monospace}
+
+/* Flashcard */
+.fc-card{background:var(--card2);border:2px solid var(--border);border-radius:12px;padding:28px 24px;text-align:center;min-height:170px;display:flex;flex-direction:column;justify-content:center;margin:12px 0;transition:border-color .3s}
+.fc-card.show{border-color:var(--green)}
+.fc-card .fq{font-size:16px;font-weight:700}
+.fc-card .fa{font-size:13px;color:var(--green);margin-top:14px;padding-top:14px;border-top:1px solid var(--border);display:none}
+.fc-card.show .fa{display:block}
+.fc-btns{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:8px 0}
+
+/* Buttons */
+.btn{padding:8px 18px;border:none;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;transition:opacity .15s}
+.btn:hover{opacity:.85}
+.btn-g{background:var(--green);color:#000}
+.btn-r{background:var(--red);color:#fff}
+.btn-b{background:var(--blue);color:#fff}
+.btn-o{background:var(--border);color:var(--text)}
+
+/* Notes */
+.notes-ta{width:100%;background:var(--card2);border:1px solid var(--border);color:var(--text);padding:12px;border-radius:8px;font-size:12px;font-family:system-ui;resize:vertical;min-height:80px;outline:none}
+.notes-ta:focus{border-color:var(--blue)}
+.note-item{background:var(--card2);border-radius:6px;padding:10px 14px;margin-bottom:6px;font-size:12px}
+.note-item .nd{font-size:10px;color:var(--dimmer);font-family:monospace;margin-bottom:3px}
+
+/* Print */
+@media print{.topnav,.no-print{display:none!important}body{background:#fff;color:#000}.card,.card-flush,.diagram{border-color:#ddd;background:#f8f8f8}}
+</style>
+</head>
+<body>
+
+<nav class="topnav">
+<div class="topnav-inner">
+  <span class="brand">NIFTY EDGE v4.0</span>
+  <a href="#iron-rules">Iron Rules</a>
+  <a href="#smc-visual">SMC Framework</a>
+  <a href="#strategies">Strategies</a>
+  <a href="#killzones">Killzones</a>
+  <a href="#options">Options</a>
+  <a href="#trailing">Trailing</a>
+  <a href="#confluence">Confluence</a>
+  <a href="#tools">Checklist & Tools</a>
+  <a href="#notes">Notes</a>
+  <span class="clock" id="clock"></span>
+</div>
+</nav>
+
+<div class="wrap">
+
+<!-- ==================== IRON RULES ==================== -->
+<section id="iron-rules">
+<h2>Iron Rules</h2>
+<p class="subtitle">9 rules carved in stone. Break any one = stop trading for the day.</p>
+
+<div class="rule-strip"><span class="rnum">1</span><div><div class="rtxt">NEVER trade against 15-min bias</div><div class="rdesc">Bullish bias = only CALLS. Bearish = only PUTS. This single rule eliminates 50% of losses.</div></div></div>
+<div class="rule-strip"><span class="rnum">2</span><div><div class="rtxt">NEVER enter a mitigated OB</div><div class="rdesc">If price already returned to the OB zone, the institution closed their position. OB is dead.</div></div></div>
+<div class="rule-strip"><span class="rnum">3</span><div><div class="rtxt">NEVER skip the Tradable OB Checklist</div><div class="rdesc">4 mandatory features + 1 confluence minimum. If any mandatory missing = SKIP.</div></div></div>
+<div class="rule-strip"><span class="rnum">4</span><div><div class="rtxt">NEVER move SL further from entry</div><div class="rdesc">Only closer. Moving SL away = adding risk to a losing trade = account destruction.</div></div></div>
+<div class="rule-strip"><span class="rnum">5</span><div><div class="rtxt">NEVER risk more than 2% daily</div><div class="rdesc">KILL SWITCH at 2%. Close all. Walk away. Weekly: 4%. Monthly: 8%.</div></div></div>
+<div class="rule-strip"><span class="rnum">6</span><div><div class="rtxt">NEVER trade dead zone 12:00-13:30</div><div class="rdesc">Low volume = unreliable BOS/CHoCH. OBs formed here have low mitigation probability.</div></div></div>
+<div class="rule-strip ok"><span class="rnum">7</span><div><div class="rtxt">ALWAYS wait for 5-min candle CLOSE</div><div class="rdesc">Before acting on BOS/CHoCH. A wick is not a breakout. Wait for body close.</div></div></div>
+<div class="rule-strip ok"><span class="rnum">8</span><div><div class="rtxt">ALWAYS journal every trade</div><div class="rdesc">OB type, BOS type, liquidity context, score, screenshots. No journal = no improvement.</div></div></div>
+<div class="rule-strip ok"><span class="rnum">9</span><div><div class="rtxt">ALWAYS pre-plan both scenarios</div><div class="rdesc">Map bullish AND bearish levels before open. Every trade is pre-planned. Zero FOMO.</div></div></div>
+
+<h4>Circuit Breakers</h4>
+<div class="g3">
+  <div class="card" style="text-align:center"><div style="font-size:28px;font-weight:800;color:var(--red)" class="mono">2%</div><div style="font-size:11px;color:var(--dim)">Max Daily Loss</div><div style="font-size:10px;color:var(--red);margin-top:4px">KILL SWITCH</div></div>
+  <div class="card" style="text-align:center"><div style="font-size:28px;font-weight:800;color:var(--amber)" class="mono">4%</div><div style="font-size:11px;color:var(--dim)">Max Weekly Loss</div><div style="font-size:10px;color:var(--amber);margin-top:4px">Saturday review</div></div>
+  <div class="card" style="text-align:center"><div style="font-size:28px;font-weight:800;color:var(--amber)" class="mono">8%</div><div style="font-size:11px;color:var(--dim)">Max Monthly DD</div><div style="font-size:10px;color:var(--amber);margin-top:4px">5 days off, half size</div></div>
+</div>
+<div class="g4" style="margin-top:8px">
+  <div class="card" style="text-align:center;padding:12px"><div style="font-size:11px;font-weight:700">2 Consecutive Losses</div><div style="font-size:10px;color:var(--amber)">Half size next</div></div>
+  <div class="card" style="text-align:center;padding:12px"><div style="font-size:11px;font-weight:700">3 Consecutive Losses</div><div style="font-size:10px;color:var(--red)">STOP for the day</div></div>
+  <div class="card" style="text-align:center;padding:12px"><div style="font-size:11px;font-weight:700">Max Trades/Day</div><div style="font-size:16px;font-weight:800;color:var(--text)" class="mono">5</div></div>
+  <div class="card" style="text-align:center;padding:12px"><div style="font-size:11px;font-weight:700">Max Concurrent</div><div style="font-size:16px;font-weight:800;color:var(--text)" class="mono">3</div></div>
+</div>
+</section>
+
+<!-- ==================== SMC FRAMEWORK VISUAL ==================== -->
+<section id="smc-visual">
+<h2>SMC Framework — Visual Guide</h2>
+<p class="subtitle">Order Blocks, FVG, BOS, CHoCH, Liquidity — explained with diagrams.</p>
+
+<!-- OB Diagram -->
+<h3>Order Block (OB) — Formation & Entry</h3>
+<div class="diagram">
+<svg viewBox="0 0 700 220">
+  <!-- Bearish candles before impulse -->
+  <rect x="60" y="80" width="14" height="40" fill="none" stroke="var(--red)" stroke-width="1.5" rx="1"/><line x1="67" y1="70" x2="67" y2="130" stroke="var(--red)" stroke-width="1"/>
+  <rect x="80" y="90" width="14" height="30" fill="none" stroke="var(--red)" stroke-width="1.5" rx="1"/><line x1="87" y1="85" x2="87" y2="125" stroke="var(--red)" stroke-width="1"/>
+  <!-- THE OB candle (last bearish before impulse) -->
+  <rect x="100" y="95" width="16" height="28" fill="rgba(59,130,246,.3)" stroke="var(--blue)" stroke-width="2" rx="2"/>
+  <line x1="108" y1="88" x2="108" y2="130" stroke="var(--red)" stroke-width="1"/>
+  <text x="100" y="145" font-size="9" fill="var(--blue)" font-weight="700" font-family="system-ui">BULLISH OB</text>
+  <text x="100" y="155" font-size="8" fill="var(--dimmer)" font-family="system-ui">(last red candle)</text>
+  <!-- Arrow: OB zone -->
+  <rect x="96" y="88" width="24" height="45" fill="none" stroke="var(--blue)" stroke-width="1" stroke-dasharray="4 2" rx="3"/>
+  <!-- Impulse up -->
+  <rect x="122" y="50" width="14" height="60" fill="var(--green)" fill-opacity=".6" stroke="var(--green)" stroke-width="1.5" rx="1"/><line x1="129" y1="45" x2="129" y2="115" stroke="var(--green)" stroke-width="1"/>
+  <rect x="142" y="30" width="14" height="50" fill="var(--green)" fill-opacity=".6" stroke="var(--green)" stroke-width="1.5" rx="1"/><line x1="149" y1="25" x2="149" y2="85" stroke="var(--green)" stroke-width="1"/>
+  <rect x="162" y="20" width="14" height="35" fill="var(--green)" fill-opacity=".6" stroke="var(--green)" stroke-width="1.5" rx="1"/><line x1="169" y1="15" x2="169" y2="60" stroke="var(--green)" stroke-width="1"/>
+  <!-- BOS line -->
+  <line x1="45" y1="70" x2="190" y2="70" stroke="var(--dimmer)" stroke-width="1" stroke-dasharray="5 3"/>
+  <text x="45" y="66" font-size="8" fill="var(--dimmer)" font-family="system-ui">Structural High</text>
+  <text x="175" y="18" font-size="9" fill="var(--green)" font-weight="700" font-family="system-ui">BOS!</text>
+  <!-- FVG zone -->
+  <rect x="118" y="45" width="50" height="18" fill="rgba(139,92,246,.15)" stroke="var(--purple)" stroke-width="1" stroke-dasharray="3 2" rx="2"/>
+  <text x="170" y="58" font-size="8" fill="var(--purple)" font-family="system-ui">FVG</text>
+  <!-- Retrace back to OB -->
+  <path d="M176 20 L195 35 L205 28 L220 45 L235 55 L248 70 L258 85 L265 95" fill="none" stroke="var(--amber)" stroke-width="1.5" stroke-dasharray="4 2"/>
+  <text x="215" y="42" font-size="8" fill="var(--amber)" font-family="system-ui">Retrace to OB</text>
+  <!-- Entry point -->
+  <circle cx="265" cy="95" r="6" fill="none" stroke="var(--green)" stroke-width="2"/>
+  <text x="275" y="92" font-size="9" fill="var(--green)" font-weight="700" font-family="system-ui">ENTRY</text>
+  <text x="275" y="103" font-size="8" fill="var(--dim)" font-family="system-ui">(at OB mitigation)</text>
+  <!-- SL -->
+  <line x1="96" y1="133" x2="280" y2="133" stroke="var(--red)" stroke-width="1" stroke-dasharray="3 2"/>
+  <text x="282" y="136" font-size="8" fill="var(--red)" font-family="system-ui">SL (below OB + 3pt)</text>
+  <!-- REFINEMENT -->
+  <text x="380" y="30" font-size="11" fill="var(--text)" font-weight="700" font-family="system-ui">OB Refinement</text>
+  <rect x="380" y="40" width="120" height="35" fill="var(--card)" stroke="var(--border)" stroke-width="1" rx="4"/>
+  <text x="390" y="55" font-size="9" fill="var(--dim)" font-family="system-ui">15-min: ~50pt zone</text>
+  <text x="390" y="67" font-size="8" fill="var(--dimmer)" font-family="system-ui">Identify OB zone</text>
+  <path d="M440 75 L440 85" stroke="var(--dimmer)" stroke-width="1.5" marker-end="url(#aw)"/>
+  <rect x="380" y="88" width="120" height="35" fill="var(--card)" stroke="var(--blue)" stroke-width="1.5" rx="4"/>
+  <text x="390" y="103" font-size="9" fill="var(--blue)" font-family="system-ui">5-min: ~20pt zone</text>
+  <text x="390" y="115" font-size="8" fill="var(--dimmer)" font-family="system-ui">Refined entry zone</text>
+  <path d="M440 123 L440 133" stroke="var(--dimmer)" stroke-width="1.5" marker-end="url(#aw)"/>
+  <rect x="380" y="136" width="120" height="35" fill="var(--card)" stroke="var(--green)" stroke-width="1.5" rx="4"/>
+  <text x="390" y="151" font-size="9" fill="var(--green)" font-family="system-ui">1-min: ~10pt zone</text>
+  <text x="390" y="163" font-size="8" fill="var(--dimmer)" font-family="system-ui">Sniper entry (optional)</text>
+  <!-- Entry types -->
+  <text x="540" y="30" font-size="11" fill="var(--text)" font-weight="700" font-family="system-ui">Entry Types</text>
+  <rect x="540" y="40" width="140" height="28" fill="var(--card)" stroke="var(--border)" stroke-width="1" rx="4"/>
+  <text x="550" y="57" font-size="9" fill="var(--text)" font-family="system-ui">OB Open — higher trigger</text>
+  <rect x="540" y="74" width="140" height="28" fill="var(--card)" stroke="var(--blue)" stroke-width="1" rx="4"/>
+  <text x="550" y="91" font-size="9" fill="var(--blue)" font-family="system-ui">50% Fib — better R:R</text>
+  <rect x="540" y="108" width="140" height="28" fill="var(--card)" stroke="var(--green)" stroke-width="1" rx="4"/>
+  <text x="550" y="125" font-size="9" fill="var(--green)" font-family="system-ui">Wick Base — sniper</text>
+  <text x="540" y="155" font-size="9" fill="var(--dim)" font-family="system-ui">SL: Below OB low</text>
+  <text x="540" y="167" font-size="9" fill="var(--dim)" font-family="system-ui">+ 3pt buffer</text>
+  <defs><marker id="aw" markerWidth="6" markerHeight="4" refX="3" refY="2" orient="auto"><path d="M0 0L6 2L0 4Z" fill="var(--dimmer)"/></marker></defs>
+</svg>
+</div>
+
+<!-- BOS Types -->
+<h3>3 Types of Break of Structure (BOS)</h3>
+<div class="diagram">
+<svg viewBox="0 0 700 150">
+  <!-- Type 1 -->
+  <text x="25" y="18" font-size="11" fill="var(--green)" font-weight="800" font-family="system-ui">TYPE 1 — PREFERRED</text>
+  <text x="25" y="30" font-size="9" fill="var(--dim)" font-family="system-ui">Body breaks wick (Strongest)</text>
+  <line x1="25" y1="55" x2="195" y2="55" stroke="var(--dimmer)" stroke-width="1" stroke-dasharray="4 2"/>
+  <text x="25" y="52" font-size="7" fill="var(--dimmer)" font-family="monospace">Structural High (wick)</text>
+  <!-- Candle body above wick level -->
+  <rect x="140" y="35" width="18" height="35" fill="var(--green)" fill-opacity=".5" stroke="var(--green)" stroke-width="1.5" rx="1"/>
+  <line x1="149" y1="32" x2="149" y2="75" stroke="var(--green)" stroke-width="1"/>
+  <text x="162" y="50" font-size="8" fill="var(--green)" font-weight="700" font-family="system-ui">Body ABOVE wick</text>
+  <circle cx="149" cy="45" r="10" fill="none" stroke="var(--green)" stroke-width="1.5"/>
+
+  <!-- Type 2 -->
+  <text x="255" y="18" font-size="11" fill="var(--amber)" font-weight="800" font-family="system-ui">TYPE 2 — VALID</text>
+  <text x="255" y="30" font-size="9" fill="var(--dim)" font-family="system-ui">Body breaks body (Weaker)</text>
+  <line x1="255" y1="55" x2="445" y2="55" stroke="var(--dimmer)" stroke-width="1" stroke-dasharray="4 2"/>
+  <text x="255" y="52" font-size="7" fill="var(--dimmer)" font-family="monospace">Structural High (body)</text>
+  <line x1="255" y1="45" x2="445" y2="45" stroke="var(--dimmer)" stroke-width="1" stroke-dasharray="2 3"/>
+  <text x="255" y="43" font-size="7" fill="var(--dimmer)" font-family="monospace">Struct. High (wick)</text>
+  <rect x="375" y="40" width="18" height="30" fill="var(--amber)" fill-opacity=".4" stroke="var(--amber)" stroke-width="1.5" rx="1"/>
+  <line x1="384" y1="35" x2="384" y2="75" stroke="var(--amber)" stroke-width="1"/>
+  <text x="397" y="54" font-size="8" fill="var(--amber)" font-family="system-ui">Body between</text>
+  <text x="397" y="64" font-size="8" fill="var(--amber)" font-family="system-ui">wick &amp; body</text>
+
+  <!-- Type 3 -->
+  <text x="500" y="18" font-size="11" fill="var(--red)" font-weight="800" font-family="system-ui">TYPE 3 — AVOID</text>
+  <text x="500" y="30" font-size="9" fill="var(--dim)" font-family="system-ui">Wick breaks wick (Weakest)</text>
+  <line x1="500" y1="55" x2="690" y2="55" stroke="var(--dimmer)" stroke-width="1" stroke-dasharray="4 2"/>
+  <text x="500" y="52" font-size="7" fill="var(--dimmer)" font-family="monospace">Structural High (wick)</text>
+  <rect x="610" y="60" width="18" height="30" fill="var(--red)" fill-opacity=".3" stroke="var(--red)" stroke-width="1.5" rx="1"/>
+  <line x1="619" y1="48" x2="619" y2="95" stroke="var(--red)" stroke-width="1"/>
+  <text x="632" y="58" font-size="8" fill="var(--red)" font-family="system-ui">Only wick above</text>
+  <text x="632" y="68" font-size="8" fill="var(--red)" font-family="system-ui">Body stays BELOW</text>
+  <text x="632" y="82" font-size="9" fill="var(--red)" font-weight="700" font-family="system-ui">= Rejection, not BOS</text>
+  <!-- Min breaks -->
+  <text x="25" y="105" font-size="9" fill="var(--dim)" font-family="system-ui">Minimum break: Nifty 5pts | BankNifty 15pts | Volume > 1.5x avg | Dead zone needs 2x volume</text>
+</svg>
+</div>
+
+<!-- CHoCH + Two Rules -->
+<h3>CHoCH + Two Rules (Reversal Confirmation)</h3>
+<div class="diagram">
+<svg viewBox="0 0 700 200">
+  <!-- Downtrend -->
+  <path d="M30 30 L60 55 L80 45 L110 80 L130 65 L160 100 L180 85 L200 115" fill="none" stroke="var(--red)" stroke-width="2"/>
+  <text x="30" y="25" font-size="9" fill="var(--red)" font-weight="700" font-family="system-ui">Downtrend (LLs + LHs)</text>
+  <!-- LH line -->
+  <line x1="80" y1="45" x2="320" y2="45" stroke="var(--dimmer)" stroke-width="1" stroke-dasharray="4 2"/>
+  <text x="82" y="40" font-size="7" fill="var(--dimmer)" font-family="monospace">Most recent LH</text>
+  <!-- CHoCH impulse breaks above LH -->
+  <path d="M200 115 L220 95 L240 75 L260 55 L275 35" fill="none" stroke="var(--cyan)" stroke-width="2.5"/>
+  <text x="275" y="30" font-size="10" fill="var(--cyan)" font-weight="800" font-family="system-ui">CHoCH!</text>
+  <text x="275" y="42" font-size="8" fill="var(--dim)" font-family="system-ui">(Rule 1: Impulse)</text>
+  <!-- WARNING -->
+  <rect x="340" y="20" width="160" height="35" fill="rgba(245,158,11,.08)" stroke="var(--amber)" stroke-width="1.5" rx="6" stroke-dasharray="4 2"/>
+  <text x="355" y="37" font-size="9" fill="var(--amber)" font-weight="700" font-family="system-ui">DO NOT ENTER YET!</text>
+  <text x="355" y="49" font-size="8" fill="var(--dim)" font-family="system-ui">Could be liquidity grab</text>
+  <!-- Retrace -->
+  <path d="M275 35 L290 50 L300 45 L315 65 L330 80 L340 90" fill="none" stroke="var(--amber)" stroke-width="1.5" stroke-dasharray="4 2"/>
+  <text x="320" y="100" font-size="8" fill="var(--amber)" font-family="system-ui">Retrace</text>
+  <!-- OB at retrace -->
+  <rect x="330" y="82" width="16" height="14" fill="rgba(59,130,246,.3)" stroke="var(--blue)" stroke-width="1.5" rx="2"/>
+  <text x="350" y="93" font-size="8" fill="var(--blue)" font-family="system-ui">OB</text>
+  <!-- Successful retrace BOS -->
+  <path d="M340 90 L355 78 L370 65 L385 50 L400 35 L420 20" fill="none" stroke="var(--green)" stroke-width="2.5"/>
+  <text x="420" y="18" font-size="10" fill="var(--green)" font-weight="800" font-family="system-ui">Rule 2 Confirmed!</text>
+  <text x="420" y="30" font-size="8" fill="var(--dim)" font-family="system-ui">(Successful retrace BOS)</text>
+  <!-- Entry -->
+  <circle cx="337" cy="89" r="6" fill="none" stroke="var(--green)" stroke-width="2"/>
+  <line x1="337" y1="97" x2="337" y2="110" stroke="var(--green)" stroke-width="1.5"/>
+  <text x="312" y="122" font-size="10" fill="var(--green)" font-weight="700" font-family="system-ui">ENTER HERE</text>
+  <text x="312" y="134" font-size="8" fill="var(--dim)" font-family="system-ui">(at retrace OB = Entry 2)</text>
+  <!-- Key insight box -->
+  <rect x="520" y="70" width="170" height="70" fill="var(--card)" stroke="var(--border)" stroke-width="1" rx="6"/>
+  <text x="535" y="90" font-size="9" fill="var(--red)" font-weight="700" font-family="system-ui">Single CHoCH alone:</text>
+  <text x="535" y="103" font-size="8" fill="var(--dim)" font-family="system-ui">Could be liquidity grab</text>
+  <text x="535" y="118" font-size="9" fill="var(--green)" font-weight="700" font-family="system-ui">CHoCH + Rule 2:</text>
+  <text x="535" y="131" font-size="8" fill="var(--dim)" font-family="system-ui">Confirmed reversal (+15-20% WR)</text>
+</svg>
+</div>
+
+<!-- Liquidity Sweep -->
+<h3>Liquidity Sweep Mechanics</h3>
+<div class="diagram">
+<svg viewBox="0 0 700 170">
+  <!-- Support line -->
+  <line x1="30" y1="90" x2="420" y2="90" stroke="var(--amber)" stroke-width="1.5" stroke-dasharray="6 3"/>
+  <text x="30" y="85" font-size="8" fill="var(--amber)" font-weight="700" font-family="system-ui">LIQUIDITY LEVEL (PDL / EQL / Round #)</text>
+  <!-- Stop losses below -->
+  <text x="180" y="105" font-size="7" fill="var(--dimmer)" font-family="system-ui">Retail stop losses sitting below</text>
+  <line x1="200" y1="95" x2="200" y2="108" stroke="var(--dimmer)" stroke-width="1"/>
+  <line x1="230" y1="95" x2="230" y2="108" stroke="var(--dimmer)" stroke-width="1"/>
+  <line x1="260" y1="95" x2="260" y2="108" stroke="var(--dimmer)" stroke-width="1"/>
+  <!-- Price approaching -->
+  <path d="M40 40 L70 55 L90 48 L120 65 L150 72 L180 80" fill="none" stroke="var(--red)" stroke-width="2"/>
+  <!-- Sweep wick -->
+  <path d="M180 80 L200 88 L215 95 L225 115 L230 130" fill="none" stroke="var(--red)" stroke-width="2"/>
+  <circle cx="230" cy="130" r="8" fill="none" stroke="var(--amber)" stroke-width="2" stroke-dasharray="3 2"/>
+  <text x="242" y="128" font-size="9" fill="var(--amber)" font-weight="800" font-family="system-ui">SWEEP!</text>
+  <text x="242" y="140" font-size="7" fill="var(--dim)" font-family="system-ui">Stops triggered, liquidity taken</text>
+  <!-- Reversal -->
+  <path d="M230 130 L240 110 L248 100 L258 85 L272 70 L290 55 L310 45 L335 35 L360 25" fill="none" stroke="var(--green)" stroke-width="2.5"/>
+  <!-- OB at sweep -->
+  <rect x="218" y="108" width="16" height="16" fill="rgba(59,130,246,.3)" stroke="var(--blue)" stroke-width="1.5" rx="2"/>
+  <text x="238" y="115" font-size="7" fill="var(--blue)" font-family="system-ui">OB at sweep</text>
+  <!-- Volume spike -->
+  <rect x="220" y="148" width="20" height="16" fill="var(--amber)" fill-opacity=".3" rx="2"/>
+  <text x="245" y="160" font-size="7" fill="var(--dim)" font-family="system-ui">Volume spike confirms</text>
+  <!-- Trading the sweep -->
+  <rect x="460" y="15" width="220" height="140" fill="var(--card)" stroke="var(--border)" stroke-width="1" rx="8"/>
+  <text x="475" y="35" font-size="10" fill="var(--text)" font-weight="700" font-family="system-ui">How to Trade (S11)</text>
+  <text x="475" y="52" font-size="9" fill="var(--dim)" font-family="system-ui">1. Mark liquidity levels pre-market</text>
+  <text x="475" y="67" font-size="9" fill="var(--dim)" font-family="system-ui">2. WAIT for sweep (don't pre-position)</text>
+  <text x="475" y="82" font-size="9" fill="var(--dim)" font-family="system-ui">3. Wait for reversal candle CLOSE</text>
+  <text x="475" y="97" font-size="9" fill="var(--dim)" font-family="system-ui">4. Find OB at sweep, check features</text>
+  <text x="475" y="112" font-size="9" fill="var(--green)" font-weight="700" font-family="system-ui">5. Enter at OB. SL below sweep.</text>
+  <text x="475" y="127" font-size="9" fill="var(--dim)" font-family="system-ui">6. T1: 40% | T2: 30% | Trail: 30%</text>
+  <text x="475" y="145" font-size="8" fill="var(--dimmer)" font-family="system-ui">Time stop: 20 min no move = exit at cost</text>
+</svg>
+</div>
+
+<!-- Tradable OB Checklist -->
+<h3>Tradable OB Checklist (8 Features)</h3>
+<div class="card">
+<table>
+<tr><th>#</th><th>Feature</th><th>Required?</th><th>Context</th></tr>
+<tr><td>1</td><td style="font-weight:700">OB caused BOS</td><td><span class="pill pill-green">MANDATORY</span></td><td>Type 1 preferred. No BOS = not valid OB.</td></tr>
+<tr><td>2</td><td style="font-weight:700">FVG >= 2x OB size</td><td><span class="pill pill-green">MANDATORY</span></td><td>20pt OB needs 40pt+ FVG. Confirms institutions.</td></tr>
+<tr><td>3</td><td style="font-weight:700">R:R >= 3:1</td><td><span class="pill pill-green">MANDATORY</span></td><td>20pt OB = 60pt+ target minimum.</td></tr>
+<tr><td>4</td><td style="font-weight:700">Unmitigated</td><td><span class="pill pill-green">MANDATORY</span></td><td>Price hasn't returned. Mitigated = dead.</td></tr>
+<tr><td>5</td><td style="font-weight:700">Aligns with 15-min bias</td><td><span class="pill pill-green">MANDATORY</span></td><td>Against HTF = fastest way to lose.</td></tr>
+<tr><td>6</td><td>At S/R or Flip Zone</td><td><span class="pill pill-blue">CONFLUENCE</span></td><td>VWAP, PDH/PDL, round number.</td></tr>
+<tr><td>7</td><td>Takes out opposing OB</td><td><span class="pill pill-blue">CONFLUENCE</span></td><td>Bulls overpowered bears at that level.</td></tr>
+<tr><td>8</td><td>Bullish OB below EQL / Bearish above EQH</td><td><span class="pill pill-purple">VERY HIGH</span></td><td>Post-sweep = highest probability setup.</td></tr>
+</table>
+<div style="margin-top:10px;padding:10px 14px;background:rgba(245,158,11,.08);border-radius:6px;font-size:12px;color:var(--amber);font-weight:600">Minimum: All 5 mandatory + at least 1 confluence = tradable. Any mandatory missing = SKIP.</div>
+</div>
+</section>
+
+<!-- ==================== STRATEGIES ==================== -->
+<section id="strategies">
+<h2>The 4 SMC Strategies</h2>
+<p class="subtitle">Your complete playbook with step-by-step flows and expected statistics.</p>
+
+<div class="card-flush strat" style="border-color:var(--green)">
+  <div class="strat-head">
+    <h3 style="color:var(--green)">S11: Liquidity Sweep Reversal</h3>
+    <div class="strat-stats"><span class="pill pill-green">48% WR</span><span class="pill pill-green">1:3.3 R:R</span><span class="pill pill-green">+5,270 EV</span></div>
+  </div>
+  <div class="strat-body">
+    <div class="flow-row">
+      <div class="flow-box"><strong>1. Mark</strong>PDH/PDL, EQL/EQH, ORB H/L, Round #s, Max OI</div>
+      <div class="flow-box"><strong>2. Wait</strong>Price SWEEPS a level (wick beyond, body back inside)</div>
+      <div class="flow-box"><strong>3. OB</strong>Identify OB at sweep point. Check 8 features.</div>
+      <div class="flow-box"><strong>4. Enter</strong>ATM/1OTM on reversal close. SL below sweep +3pt</div>
+      <div class="flow-box"><strong>5. Exit</strong>T1: 40% | T2: 30% | Trail 30% with PA</div>
+    </div>
+  </div>
+</div>
+
+<div class="card-flush strat" style="border-color:var(--blue)">
+  <div class="strat-head">
+    <h3 style="color:var(--blue)">S12: FVG Fill + OB Confluence</h3>
+    <div class="strat-stats"><span class="pill pill-blue">52% WR</span><span class="pill pill-blue">1:2.4 R:R</span><span class="pill pill-blue">+3,590 EV</span></div>
+  </div>
+  <div class="strat-body">
+    <div class="flow-row">
+      <div class="flow-box"><strong>Prereq</strong>Trend confirmed on 15-min (both rules met)</div>
+      <div class="flow-box"><strong>1. Impulse</strong>5-min impulse creates clear FVG</div>
+      <div class="flow-box"><strong>2. OB</strong>Identify OB at impulse origin</div>
+      <div class="flow-box"><strong>3. Wait</strong>Retrace into FVG + OB overlap zone</div>
+      <div class="flow-box"><strong>4. Enter</strong>Limit at overlap. T1: impulse high (50%)</div>
+    </div>
+  </div>
+</div>
+
+<div class="card-flush strat" style="border-color:var(--amber)">
+  <div class="strat-head">
+    <h3 style="color:var(--amber)">S13: BOS Continuation</h3>
+    <div class="strat-stats"><span class="pill pill-amber">45% WR</span><span class="pill pill-amber">1:2.6 R:R</span><span class="pill pill-amber">+2,925 EV</span></div>
+  </div>
+  <div class="strat-body">
+    <div class="flow-row">
+      <div class="flow-box"><strong>1. BOS</strong>Type 1 on 5-min (body breaks wick)</div>
+      <div class="flow-box"><strong>2. OB</strong>Last opposing candle before BOS impulse</div>
+      <div class="flow-box"><strong>3. Refine</strong>15m -> 5m -> 1m. Verify unmitigated + FVG</div>
+      <div class="flow-box"><strong>4. Limit</strong>At OB open or 50%. Wait for mitigation.</div>
+      <div class="flow-box"><strong>5. Exit</strong>T1: BOS level (40%) | T2: 1.5x (30%) | Trail</div>
+    </div>
+  </div>
+</div>
+
+<div class="card-flush strat" style="border-color:var(--red)">
+  <div class="strat-head">
+    <h3 style="color:var(--red)">S14: CHoCH Reversal</h3>
+    <div class="strat-stats"><span class="pill pill-red">42% WR</span><span class="pill pill-red">1:3.3 R:R</span><span class="pill pill-red">+5,030 EV</span></div>
+  </div>
+  <div class="strat-body">
+    <div class="flow-row">
+      <div class="flow-box"><strong>1. Trend</strong>Price trending (e.g., bearish LLs/LHs)</div>
+      <div class="flow-box"><strong>2. CHoCH</strong>Breaks above most recent LH</div>
+      <div class="flow-box" style="border-color:var(--amber)"><strong style="color:var(--amber)">3. WAIT!</strong>Do NOT enter. Could be liquidity grab.</div>
+      <div class="flow-box"><strong>4. Confirm</strong>Retrace, then breaks CHoCH high = Rule 2</div>
+      <div class="flow-box"><strong>5. Enter</strong>OB from retrace BOS. Trail 40% (extended moves)</div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ==================== KILLZONES ==================== -->
+<section id="killzones">
+<h2>Killzones — Indian Market Windows</h2>
+<p class="subtitle">When to trade, when to wait, when to run.</p>
+
+<div class="kz-visual">
+  <div class="kz-seg" style="width:5%;background:#1e293b;color:var(--dimmer);font-size:7px">PRE</div>
+  <div class="kz-seg" style="width:22%;background:linear-gradient(135deg,#065f46,#059669);color:#d1fae5">OPENING DRIVE<br><span style="font-size:7px;font-weight:400">09:20-10:30</span></div>
+  <div class="kz-seg" style="width:24%;background:linear-gradient(135deg,#1e3a5f,#2563eb);color:#dbeafe">MID-MORNING<br><span style="font-size:7px;font-weight:400">10:30-12:00</span></div>
+  <div class="kz-seg" style="width:24%;background:linear-gradient(135deg,#4a1525,#991b1b);color:#fecaca">DEAD ZONE<br><span style="font-size:7px;font-weight:400">12:00-13:30</span></div>
+  <div class="kz-seg" style="width:16%;background:linear-gradient(135deg,#5c3d0e,#d97706);color:#fef3c7">AFTERNOON<br><span style="font-size:7px;font-weight:400">13:30-14:30</span></div>
+  <div class="kz-seg" style="width:9%;background:#334155;color:#cbd5e1;font-size:8px">EXIT<br><span style="font-size:7px">14:30+</span></div>
+</div>
+
+<div class="diagram">
+<svg viewBox="0 0 700 200">
+  <!-- Timeline axis -->
+  <line x1="30" y1="30" x2="670" y2="30" stroke="var(--dimmer)" stroke-width="1"/>
+  <!-- Time ticks -->
+  <line x1="30" y1="25" x2="30" y2="35" stroke="var(--dimmer)" stroke-width="1"/><text x="30" y="45" font-size="8" fill="var(--dimmer)" text-anchor="middle" font-family="monospace">09:15</text>
+  <line x1="90" y1="25" x2="90" y2="35" stroke="var(--dimmer)" stroke-width="1"/><text x="90" y="45" font-size="8" fill="var(--dimmer)" text-anchor="middle" font-family="monospace">09:20</text>
+  <line x1="220" y1="25" x2="220" y2="35" stroke="var(--dimmer)" stroke-width="1"/><text x="220" y="45" font-size="8" fill="var(--dimmer)" text-anchor="middle" font-family="monospace">10:30</text>
+  <line x1="370" y1="25" x2="370" y2="35" stroke="var(--dimmer)" stroke-width="1"/><text x="370" y="45" font-size="8" fill="var(--dimmer)" text-anchor="middle" font-family="monospace">12:00</text>
+  <line x1="500" y1="25" x2="500" y2="35" stroke="var(--dimmer)" stroke-width="1"/><text x="500" y="45" font-size="8" fill="var(--dimmer)" text-anchor="middle" font-family="monospace">13:30</text>
+  <line x1="590" y1="25" x2="590" y2="35" stroke="var(--dimmer)" stroke-width="1"/><text x="590" y="45" font-size="8" fill="var(--dimmer)" text-anchor="middle" font-family="monospace">14:30</text>
+  <line x1="670" y1="25" x2="670" y2="35" stroke="var(--dimmer)" stroke-width="1"/><text x="670" y="45" font-size="8" fill="var(--dimmer)" text-anchor="middle" font-family="monospace">15:10</text>
+  <!-- Activity level curve -->
+  <path d="M30 160 Q60 155 90 100 Q130 55 155 60 Q180 65 220 80 Q280 95 340 110 Q370 120 420 150 Q450 155 500 110 Q540 75 560 85 Q590 100 630 140 Q660 155 670 160" fill="none" stroke="var(--cyan)" stroke-width="2"/>
+  <text x="30" y="175" font-size="8" fill="var(--cyan)" font-family="system-ui">Institutional Activity Level</text>
+  <!-- Annotations -->
+  <text x="100" y="55" font-size="8" fill="var(--green)" font-weight="700" font-family="system-ui">PDH/PDL sweeps</text>
+  <text x="100" y="66" font-size="8" fill="var(--green)" font-family="system-ui">S11, S13, S14</text>
+  <text x="250" y="82" font-size="8" fill="var(--blue)" font-weight="700" font-family="system-ui">OB mitigations</text>
+  <text x="250" y="93" font-size="8" fill="var(--blue)" font-family="system-ui">S12, S13 (safest)</text>
+  <rect x="375" y="113" width="115" height="28" fill="rgba(239,68,68,.08)" stroke="var(--red)" stroke-width="1" stroke-dasharray="3 2" rx="4"/>
+  <text x="395" y="128" font-size="9" fill="var(--red)" font-weight="700" font-family="system-ui">NO ENTRIES</text>
+  <text x="395" y="138" font-size="7" fill="var(--dim)" font-family="system-ui">Manage only</text>
+  <text x="508" y="95" font-size="8" fill="var(--amber)" font-weight="700" font-family="system-ui">CHoCH reversals</text>
+  <text x="508" y="106" font-size="8" fill="var(--amber)" font-family="system-ui">S11, S14</text>
+  <text x="608" y="125" font-size="8" fill="var(--dimmer)" font-weight="700" font-family="system-ui">EXIT ALL</text>
+</svg>
+</div>
+</section>
+
+<!-- ==================== OPTIONS ==================== -->
+<section id="options">
+<h2>Option Buying Rules</h2>
+<p class="subtitle">Strike, expiry, theta, and premium execution.</p>
+<div class="g2">
+<div class="card">
+<h4>Strike Selection</h4>
+<table>
+<tr><th>Setup</th><th>Strike</th><th>Delta</th></tr>
+<tr><td style="font-weight:700;color:var(--green)">High Conviction</td><td>ATM</td><td class="mono">0.45-0.55</td></tr>
+<tr><td>Standard</td><td>1 OTM</td><td class="mono">0.35-0.45</td></tr>
+<tr><td style="color:var(--dim)">Speculative (rare)</td><td>2 OTM</td><td class="mono">0.25-0.35</td></tr>
+</table>
+</div>
+<div class="card">
+<h4>Expiry & Theta</h4>
+<table>
+<tr><th>Day</th><th>Buy Expiry</th></tr>
+<tr><td>Mon-Wed</td><td>Current week (max gamma)</td></tr>
+<tr><td>Thursday</td><td>Next week (avoid crush)</td></tr>
+<tr><td>Friday+</td><td>Next week</td></tr>
+</table>
+<div style="margin-top:8px;font-size:11px;color:var(--amber);font-weight:600">Expiry day ATM theta: 3-5x normal. Only BEST setups.</div>
+<div style="font-size:11px;color:var(--red);font-weight:600;margin-top:4px">ALWAYS LIMIT orders. Never market.</div>
+</div>
+</div>
+</section>
+
+<!-- ==================== TRAILING ==================== -->
+<section id="trailing">
+<h2>PA Trailing Stop System</h2>
+<p class="subtitle">Let the market tell you when the move is over.</p>
+<div class="diagram">
+<svg viewBox="0 0 700 200">
+  <!-- Price path up -->
+  <path d="M30 160 L60 140 L80 148 L110 120 L130 128 L160 95 L180 102 L210 70 L230 78 L260 50 L280 58 L310 35 L340 42 L370 25" fill="none" stroke="var(--green)" stroke-width="2"/>
+  <!-- OB entry -->
+  <rect x="24" y="152" width="14" height="14" fill="rgba(59,130,246,.3)" stroke="var(--blue)" stroke-width="1.5" rx="2"/>
+  <text x="42" y="165" font-size="8" fill="var(--blue)" font-family="system-ui">OB Entry</text>
+  <!-- Initial SL -->
+  <line x1="20" y1="175" x2="100" y2="175" stroke="var(--red)" stroke-width="1.5" stroke-dasharray="4 2"/>
+  <text x="20" y="188" font-size="8" fill="var(--red)" font-family="system-ui">Initial SL (below OB +3pt)</text>
+  <!-- T1 -->
+  <line x1="140" y1="95" x2="250" y2="95" stroke="var(--dimmer)" stroke-width="1" stroke-dasharray="3 2"/>
+  <circle cx="160" cy="95" r="5" fill="none" stroke="var(--amber)" stroke-width="1.5"/>
+  <text x="170" y="93" font-size="8" fill="var(--amber)" font-weight="700" font-family="system-ui">T1: Book 40%</text>
+  <text x="170" y="104" font-size="7" fill="var(--dim)" font-family="system-ui">Move SL to breakeven</text>
+  <!-- Trailing HLs -->
+  <circle cx="80" cy="148" r="3" fill="var(--green)"/><text x="64" y="145" font-size="7" fill="var(--dimmer)" font-family="system-ui">HL1</text>
+  <circle cx="130" cy="128" r="3" fill="var(--green)"/><text x="114" y="125" font-size="7" fill="var(--dimmer)" font-family="system-ui">HL2</text>
+  <circle cx="180" cy="102" r="3" fill="var(--green)"/><text x="164" y="99" font-size="7" fill="var(--dimmer)" font-family="system-ui">HL3</text>
+  <circle cx="230" cy="78" r="3" fill="var(--green)"/><text x="214" y="75" font-size="7" fill="var(--dimmer)" font-family="system-ui">HL4</text>
+  <!-- Trailing SLs -->
+  <line x1="80" y1="151" x2="135" y2="151" stroke="var(--amber)" stroke-width="1" stroke-dasharray="2 2"/>
+  <line x1="130" y1="131" x2="185" y2="131" stroke="var(--amber)" stroke-width="1" stroke-dasharray="2 2"/>
+  <line x1="180" y1="105" x2="235" y2="105" stroke="var(--amber)" stroke-width="1" stroke-dasharray="2 2"/>
+  <line x1="230" y1="81" x2="310" y2="81" stroke="var(--amber)" stroke-width="1" stroke-dasharray="2 2"/>
+  <text x="242" y="79" font-size="7" fill="var(--amber)" font-family="system-ui">SL trails up with each HL</text>
+  <!-- T2 -->
+  <circle cx="260" cy="50" r="5" fill="none" stroke="var(--green)" stroke-width="1.5"/>
+  <text x="270" y="48" font-size="8" fill="var(--green)" font-weight="700" font-family="system-ui">T2: Book 30%</text>
+  <text x="270" y="59" font-size="7" fill="var(--dim)" font-family="system-ui">Trail remaining 30%</text>
+  <!-- Exit summary box -->
+  <rect x="440" y="20" width="240" height="120" fill="var(--card)" stroke="var(--border)" stroke-width="1" rx="8"/>
+  <text x="460" y="42" font-size="11" fill="var(--text)" font-weight="700" font-family="system-ui">40 / 30 / 30 Rule</text>
+  <rect x="460" y="52" width="60" height="20" fill="rgba(245,158,11,.15)" rx="4"/><text x="475" y="66" font-size="9" fill="var(--amber)" font-weight="700" text-anchor="middle" font-family="system-ui">40%</text>
+  <text x="525" y="66" font-size="9" fill="var(--dim)" font-family="system-ui">at T1 + SL to breakeven</text>
+  <rect x="460" y="78" width="60" height="20" fill="rgba(16,185,129,.15)" rx="4"/><text x="475" y="92" font-size="9" fill="var(--green)" font-weight="700" text-anchor="middle" font-family="system-ui">30%</text>
+  <text x="525" y="92" font-size="9" fill="var(--dim)" font-family="system-ui">at T2 + continue trail</text>
+  <rect x="460" y="104" width="60" height="20" fill="rgba(59,130,246,.15)" rx="4"/><text x="475" y="118" font-size="9" fill="var(--blue)" font-weight="700" text-anchor="middle" font-family="system-ui">30%</text>
+  <text x="525" y="118" font-size="9" fill="var(--dim)" font-family="system-ui">trail until structure breaks</text>
+  <!-- Exit trigger -->
+  <text x="460" y="155" font-size="9" fill="var(--red)" font-weight="700" font-family="system-ui">EXIT: 5-min BODY below last HL</text>
+  <text x="460" y="168" font-size="9" fill="var(--red)" font-family="system-ui">TIME: Everything out by 15:00</text>
+</svg>
+</div>
+</section>
+
+<!-- ==================== CONFLUENCE ==================== -->
+<section id="confluence">
+<h2>OI Confluence + Advanced Tools</h2>
+<p class="subtitle">The unique Indian edge: SMC footprints + live OI GPS.</p>
+
+<div class="g2">
+<div class="card">
+<h4>SMC + OI Rules</h4>
+<table>
+<tr><th>Rule</th><th>Action</th></tr>
+<tr><td>OB at Max OI Put strike</td><td style="color:var(--green);font-weight:700">FULL SIZE</td></tr>
+<tr><td>Put OI increasing near Bullish OB</td><td>Standard size</td></tr>
+<tr><td style="color:var(--red)">Put OI decreasing + Call OI up</td><td style="color:var(--red);font-weight:700">SKIP OB</td></tr>
+<tr><td>CHoCH + PCR shift same direction</td><td>Double confirm</td></tr>
+<tr><td>Target aligns with Max Pain</td><td>Stronger target</td></tr>
+</table>
+</div>
+<div class="card">
+<h4>IV Percentile</h4>
+<table>
+<tr><th>IVP</th><th>Options</th><th>Size</th></tr>
+<tr><td class="mono" style="color:var(--green)">&lt;30</td><td>CHEAP</td><td style="font-weight:700">Full size</td></tr>
+<tr><td class="mono">30-50</td><td>Normal</td><td>Standard</td></tr>
+<tr><td class="mono" style="color:var(--amber)">50-70</td><td>Expensive</td><td>Reduce 25%</td></tr>
+<tr><td class="mono" style="color:var(--red)">&gt;70</td><td>V. Expensive</td><td>Reduce 50%</td></tr>
+</table>
+</div>
+</div>
+
+<div class="g3" style="margin-top:12px">
+<div class="card" style="padding:14px">
+<h4 style="margin-top:0">Volume Profile</h4>
+<p style="font-size:11px;color:var(--dim)"><strong style="color:var(--text)">POC:</strong> Highest volume. OB at POC = best entry.<br><strong style="color:var(--text)">VAH/VAL:</strong> 70% volume boundaries. OB at VAL = strong support.<br><strong style="color:var(--text)">LVN:</strong> Fast moves. FVGs align here.</p>
+</div>
+<div class="card" style="padding:14px">
+<h4 style="margin-top:0">Delta Volume</h4>
+<p style="font-size:11px;color:var(--dim)"><strong style="color:var(--green)">+Delta at OB:</strong> Buyers stepping in. Confluence.<br><strong style="color:var(--red)">-Delta at OB:</strong> Warning, may break.<br><strong style="color:var(--cyan)">Sweep + delta flip:</strong> Highest-conviction S11.</p>
+</div>
+<div class="card" style="padding:14px">
+<h4 style="margin-top:0">Multi-Index</h4>
+<p style="font-size:11px;color:var(--dim)"><strong style="color:var(--green)">Both BOS:</strong> Full size.<br><strong style="color:var(--amber)">One only:</strong> Half size.<br><strong style="color:var(--red)">Divergence:</strong> Stand aside.<br>BankNifty leads by 5-10 min.</p>
+</div>
+</div>
+</section>
+
+<!-- ==================== TOOLS ==================== -->
+<section id="tools">
+<h2>Interactive Tools</h2>
+
+<div class="g2">
+<!-- Checklist -->
+<div class="card">
+<h4 style="margin-top:0">Pre-Trade Checklist</h4>
+<div id="cl">
+<div class="cl-item" onclick="clk(this)"><input type="checkbox" onchange="goNogo()"><span>15-min bias determined?</span></div>
+<div class="cl-item" onclick="clk(this)"><input type="checkbox" onchange="goNogo()"><span>5-min structure mapped?</span></div>
+<div class="cl-item" onclick="clk(this)"><input type="checkbox" onchange="goNogo()"><span>Liquidity levels marked?</span></div>
+<div class="cl-item" onclick="clk(this)"><input type="checkbox" onchange="goNogo()"><span>OB meets tradable criteria? (5 mandatory + 1 confluence)</span></div>
+<div class="cl-item" onclick="clk(this)"><input type="checkbox" onchange="goNogo()"><span>BOS confirmed? (Type 1 preferred)</span></div>
+<div class="cl-item" onclick="clk(this)"><input type="checkbox" onchange="goNogo()"><span>Two rules met? (Impulse + Retrace)</span></div>
+<div class="cl-item" onclick="clk(this)"><input type="checkbox" onchange="goNogo()"><span>R:R >= 3:1?</span></div>
+<div class="cl-item" onclick="clk(this)"><input type="checkbox" onchange="goNogo()"><span>OI confluence checked?</span></div>
+<div class="cl-item" onclick="clk(this)"><input type="checkbox" onchange="goNogo()"><span>IV Percentile checked?</span></div>
+<div class="cl-item" onclick="clk(this)"><input type="checkbox" onchange="goNogo()"><span>Trade score >= 8/12?</span></div>
+<div class="cl-item" onclick="clk(this)"><input type="checkbox" onchange="goNogo()"><span>Position size within risk?</span></div>
+<div class="cl-item" onclick="clk(this)"><input type="checkbox" onchange="goNogo()"><span>SL on exchange?</span></div>
+<div class="cl-item" onclick="clk(this)"><input type="checkbox" onchange="goNogo()"><span>Within active killzone?</span></div>
+<div class="cl-item" onclick="clk(this)"><input type="checkbox" onchange="goNogo()"><span>Emotional state: calm?</span></div>
+</div>
+<div class="go-box" id="goBox" style="background:rgba(239,68,68,.1);color:var(--red);border:2px solid var(--red)">DO NOT TRADE</div>
+<div style="text-align:center"><button class="btn btn-o" onclick="resetCl()">Reset</button></div>
+</div>
+
+<!-- Scoring -->
+<div class="card">
+<h4 style="margin-top:0">Trade Scoring Calculator</h4>
+<div id="sc">
+<div class="sc-row"><label>15-min bias alignment</label><select onchange="calcSc()"><option value="0">0 — Against</option><option value="1">1 — Neutral</option><option value="2">2 — Perfect</option></select></div>
+<div class="sc-row"><label>OB quality</label><select onchange="calcSc()"><option value="0">0 — &lt;3 mandatory</option><option value="1">1 — 3 mandatory</option><option value="2">2 — 4+ mandatory</option></select></div>
+<div class="sc-row"><label>BOS quality</label><select onchange="calcSc()"><option value="0">0 — Type 2/3</option><option value="1">1 — Type 1 + vol</option></select></div>
+<div class="sc-row"><label>Liquidity context</label><select onchange="calcSc()"><option value="0">0 — None</option><option value="1">1 — Some</option><option value="2">2 — Sweep + EQL/EQH</option></select></div>
+<div class="sc-row"><label>OI confluence</label><select onchange="calcSc()"><option value="0">0 — No</option><option value="1">1 — Yes</option></select></div>
+<div class="sc-row"><label>Killzone</label><select onchange="calcSc()"><option value="0">0 — Dead zone</option><option value="1">1 — Active</option></select></div>
+<div class="sc-row"><label>R:R ratio</label><select onchange="calcSc()"><option value="0">0 — &lt;3:1</option><option value="1">1 — >=3:1</option></select></div>
+<div class="sc-row"><label>Two rules</label><select onchange="calcSc()"><option value="0">0 — Only 1st BOS</option><option value="1">1 — Both confirmed</option></select></div>
+<div class="sc-row"><label>Emotional state</label><select onchange="calcSc()"><option value="0">0 — FOMO/revenge</option><option value="1">1 — Calm</option></select></div>
+</div>
+<div class="sc-result" id="scRes" style="background:rgba(239,68,68,.08);color:var(--red);border:2px solid var(--red)"><div class="big">0</div><div>/12 — NO TRADE</div></div>
+<div style="text-align:center"><button class="btn btn-o" onclick="resetSc()">Reset</button></div>
+</div>
+</div>
+
+<!-- Flashcards -->
+<div class="card" style="margin-top:14px">
+<h4 style="margin-top:0">Rule Quiz — 25 Flashcards</h4>
+<div style="text-align:center;font-size:11px;color:var(--dimmer)" id="fcProg">1 / 25</div>
+<div class="fc-card" id="fc">
+  <div class="fq" id="fcQ"></div>
+  <div class="fa" id="fcA"></div>
+</div>
+<div class="fc-btns">
+  <button class="btn btn-o" onclick="fcP()">Prev</button>
+  <button class="btn btn-b" id="fcRB" onclick="fcR()">Show Answer</button>
+  <button class="btn btn-o" onclick="fcN()">Next</button>
+</div>
+<div class="fc-btns" id="fcSA" style="display:none;margin-top:6px">
+  <button class="btn btn-g" onclick="fcOk()">Got It</button>
+  <button class="btn btn-r" onclick="fcNo()">Review</button>
+</div>
+<div style="display:flex;gap:16px;justify-content:center;margin-top:8px;font-size:12px;font-weight:600">
+  <span style="color:var(--green)" id="fcC">Correct: 0</span>
+  <span style="color:var(--red)" id="fcW">Review: 0</span>
+  <button class="btn btn-o" style="padding:4px 12px;font-size:10px" onclick="fcReset()">Reset</button>
+</div>
+</div>
+</section>
+
+<!-- ==================== NOTES ==================== -->
+<section id="notes">
+<h2>Notes & Journal</h2>
+<p class="subtitle">Saved to your browser (localStorage). Persists between sessions.</p>
+<div class="g2">
+<div class="card">
+<h4 style="margin-top:0">Daily Notes <span style="font-weight:400;font-size:10px;color:var(--dimmer)" id="today"></span></h4>
+<textarea class="notes-ta" id="dNote" placeholder="Market structure, bias, key levels, trade notes..."></textarea>
+<div style="margin-top:6px"><button class="btn btn-g" onclick="saveD()">Save</button></div>
+<div id="dList" style="margin-top:10px"></div>
+</div>
+<div class="card">
+<h4 style="margin-top:0">Observations (Persistent)</h4>
+<textarea class="notes-ta" id="oNote" placeholder="Patterns noticed, rule refinements..."></textarea>
+<div style="margin-top:6px"><button class="btn btn-b" onclick="saveO()">Save</button></div>
+<div id="oList" style="margin-top:10px"></div>
+</div>
+</div>
+<div style="text-align:center;margin-top:12px"><button class="btn btn-r" onclick="clearNotes()">Clear All Notes</button></div>
+</section>
+
+<div style="text-align:center;padding:20px;font-size:10px;color:var(--dimmer)">
+NIFTY EDGE v4.0 — Visual Playbook | Educational only. Not financial advice. 89% of F&O traders lose money (SEBI 2023).
+</div>
+</div>
+
+<script>
+// Clock
+function tick(){const d=new Date();document.getElementById('clock').textContent='IST '+d.toLocaleTimeString('en-IN',{timeZone:'Asia/Kolkata',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false})}
+tick();setInterval(tick,1000);
+
+// Nav highlight
+const navLinks=document.querySelectorAll('.topnav a');
+const obs=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){navLinks.forEach(l=>l.classList.remove('active'));const a=document.querySelector(`.topnav a[href="#${e.target.id}"]`);if(a)a.classList.add('active')}})},{threshold:.2,rootMargin:'-60px 0px -60% 0px'});
+document.querySelectorAll('section[id]').forEach(s=>obs.observe(s));
+
+// Checklist
+function clk(el){const cb=el.querySelector('input');cb.checked=!cb.checked;el.classList.toggle('done',cb.checked);goNogo()}
+function goNogo(){const cbs=document.querySelectorAll('#cl input');const all=[...cbs].every(c=>c.checked);const b=document.getElementById('goBox');if(all){b.style.background='rgba(16,185,129,.1)';b.style.color='var(--green)';b.style.borderColor='var(--green)';b.textContent='TAKE THE TRADE'}else{const r=cbs.length-[...cbs].filter(c=>c.checked).length;b.style.background='rgba(239,68,68,.1)';b.style.color='var(--red)';b.style.borderColor='var(--red)';b.textContent=`DO NOT TRADE — ${r} remaining`}}
+function resetCl(){document.querySelectorAll('#cl input').forEach(c=>{c.checked=false;c.closest('.cl-item').classList.remove('done')});goNogo()}
+
+// Score
+function calcSc(){let t=0;document.querySelectorAll('#sc select').forEach(s=>t+=+s.value);const el=document.getElementById('scRes');if(t>=9){el.style.background='rgba(16,185,129,.08)';el.style.color='var(--green)';el.style.borderColor='var(--green)';el.innerHTML=`<div class="big">${t}</div><div>/12 — FULL SIZE</div>`}else if(t===8){el.style.background='rgba(245,158,11,.08)';el.style.color='var(--amber)';el.style.borderColor='var(--amber)';el.innerHTML=`<div class="big">${t}</div><div>/12 — HALF SIZE</div>`}else{el.style.background='rgba(239,68,68,.08)';el.style.color='var(--red)';el.style.borderColor='var(--red)';el.innerHTML=`<div class="big">${t}</div><div>/12 — NO TRADE</div>`}}
+function resetSc(){document.querySelectorAll('#sc select').forEach(s=>s.selectedIndex=0);calcSc()}
+
+// Flashcards
+const fcs=[
+{q:"What is a Bullish Order Block?",a:"Last bearish candle before a bullish impulse that caused BOS."},
+{q:"What must an OB do to be valid?",a:"It MUST cause a Break of Structure. No BOS = not a valid OB."},
+{q:"What are the 3 types of BOS?",a:"Type 1: body breaks wick (PREFERRED). Type 2: body breaks body. Type 3: wick breaks wick (AVOID)."},
+{q:"What are the 2 rules for reversal?",a:"Rule 1: Impulse breaks structural point. Rule 2: Successful retrace breaks structure again. BOTH needed."},
+{q:"What could a single CHoCH be?",a:"A liquidity grab. Do NOT assume reversal until Rule 2 confirms."},
+{q:"Minimum FVG size for Nifty?",a:"5 points on 5-min chart."},
+{q:"FVG-to-OB ratio rule?",a:"Imbalance after OB must be >= 2x OB size."},
+{q:"Minimum R:R for tradable OB?",a:"3:1 (target >= 3x the OB size / stop loss)."},
+{q:"Where does liquidity sit?",a:"Above every high (buy stops), below every low (sell stops). EQL/EQH = massive pools."},
+{q:"How often is PDH/PDL swept in first 30 min?",a:"60%+ of trading days."},
+{q:"Entry 1 vs Entry 2?",a:"Entry 1: at OB from first BOS (riskier, ~35-40% WR). Entry 2: after successful retrace (safer, ~50-55% WR)."},
+{q:"What is the dead zone?",a:"12:00-13:30 IST. Low volume. All signals unreliable. NO new entries."},
+{q:"Best killzone for entries?",a:"09:20-10:30 Opening Drive. Highest institutional volume."},
+{q:"ATM delta for SMC entries?",a:"0.45-0.55 (high conviction). 0.35-0.45 (standard). 0.25-0.35 (speculative)."},
+{q:"Max daily loss?",a:"2% of capital. KILL SWITCH. Non-negotiable."},
+{q:"How to trail with PA?",a:"Move SL below each new 5-min Higher Low. Exit when BODY closes below most recent HL."},
+{q:"What makes SMC+OI unique to India?",a:"SMC = where institutions WERE. OI = where they ARE NOW. Combined = footprints + live GPS."},
+{q:"Start with Entry 1 or 2?",a:"Entry 2 for first 3 months. Add Entry 1 with HALF size once WR proven at 50%+."},
+{q:"What is the 40/30/30 rule?",a:"Book 40% at T1, 30% at T2, trail remaining 30% with swing structure."},
+{q:"IVP below 30 means?",a:"Options are CHEAP. Full position size for buying."},
+{q:"OB at POC (Volume Profile)?",a:"Highest probability entry. POC = where institutions traded most."},
+{q:"Single most important rule?",a:"NEVER trade against 15-min bias. Eliminates 50% of losses."},
+{q:"What invalidates an OB setup?",a:"If structural low (bullish) or high (bearish) breaks before price reaches OB."},
+{q:"After stop-out, what to do?",a:"5-min pause. Re-assess bias. Find NEW unmitigated OB. HALF size. 2nd fail = stop for day."},
+{q:"Nifty + BankNifty both BOS?",a:"STRONG conviction. Full size. Divergence = stand aside."}
+];
+let fi=0,fc0=0,fw0=0;
+function fcDraw(){document.getElementById('fcQ').textContent=fcs[fi].q;document.getElementById('fcA').textContent=fcs[fi].a;document.getElementById('fc').classList.remove('show');document.getElementById('fcRB').style.display='';document.getElementById('fcSA').style.display='none';document.getElementById('fcProg').textContent=`${fi+1} / ${fcs.length}`}
+function fcR(){document.getElementById('fc').classList.add('show');document.getElementById('fcRB').style.display='none';document.getElementById('fcSA').style.display='flex'}
+function fcN(){fi=(fi+1)%fcs.length;fcDraw()}
+function fcP(){fi=(fi-1+fcs.length)%fcs.length;fcDraw()}
+function fcOk(){fc0++;document.getElementById('fcC').textContent='Correct: '+fc0;fcN()}
+function fcNo(){fw0++;document.getElementById('fcW').textContent='Review: '+fw0;fcN()}
+function fcReset(){fi=0;fc0=0;fw0=0;document.getElementById('fcC').textContent='Correct: 0';document.getElementById('fcW').textContent='Review: 0';fcDraw()}
+fcDraw();
+
+// Notes
+const LS=(k)=>{try{return JSON.parse(localStorage.getItem(k))||[]}catch{return[]}};
+const SS=(k,v)=>localStorage.setItem(k,JSON.stringify(v));
+const esc=s=>{const d=document.createElement('div');d.textContent=s;return d.innerHTML};
+function saveD(){const t=document.getElementById('dNote').value.trim();if(!t)return;const n=LS('ne4_d');n.unshift({d:new Date().toLocaleString('en-IN',{timeZone:'Asia/Kolkata',dateStyle:'medium',timeStyle:'short'}),t});SS('ne4_d',n);document.getElementById('dNote').value='';renderD()}
+function saveO(){const t=document.getElementById('oNote').value.trim();if(!t)return;const n=LS('ne4_o');n.unshift({d:new Date().toLocaleDateString('en-IN',{timeZone:'Asia/Kolkata',dateStyle:'medium'}),t});SS('ne4_o',n);document.getElementById('oNote').value='';renderO()}
+function renderD(){document.getElementById('dList').innerHTML=LS('ne4_d').map(n=>`<div class="note-item"><div class="nd">${n.d}</div>${esc(n.t)}</div>`).join('')}
+function renderO(){document.getElementById('oList').innerHTML=LS('ne4_o').map(n=>`<div class="note-item"><div class="nd">${n.d}</div>${esc(n.t)}</div>`).join('')}
+function clearNotes(){if(confirm('Clear ALL notes?')){localStorage.removeItem('ne4_d');localStorage.removeItem('ne4_o');renderD();renderO()}}
+document.getElementById('today').textContent=new Date().toLocaleDateString('en-IN',{timeZone:'Asia/Kolkata',weekday:'short',month:'short',day:'numeric'});
+renderD();renderO();
+</script>
+</body>
+</html>
